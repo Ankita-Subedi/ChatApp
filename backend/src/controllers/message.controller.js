@@ -32,31 +32,38 @@ export const getMessages = async(req, res) => {
     }
 }
 
-export const sendMessage = async(req, res) => {
-    try{
-const {text, image} = req.body;
-const {id: receiverId} = req.params;
-const senderId = req.user._id;
-
-let imageURL;
-if(image){
-    //upload image to cloudinary
-    const uploadResponse = await cloudinary.uploader.upload(image);
-    imageURL = uploadResponse.secure_url;
-}
-
-const newMessage = new Message({
-    senderId, receiverId, text, image: imageURL,
-})
-
-await newMessage.save();
-
-
-//todo real time functionality
-
-
-    }catch(error){
-        console.log("Error in sendMessage: ", error.message);
-        res.status(500).json({error: "Internal server error"});
+export const sendMessage = async (req, res) => {
+    try {
+      const { text, image } = req.body;
+      const { id: receiverId } = req.params;
+      const senderId = req.user._id;
+  
+      let imageURL;
+      if (image) {
+        // upload image to Cloudinary
+        const uploadResponse = await cloudinary.uploader.upload(image);
+        imageURL = uploadResponse.secure_url;
+        console.log("Cloudinary Image URL:", imageURL);  // Debugging the URL
+      }
+  
+      const newMessage = new Message({
+        senderId,
+        receiverId,
+        text,
+        image: imageURL,  // Save the image URL in the database
+      });
+  
+      await newMessage.save();
+  
+      // Return the saved message with the image URL in the response
+      res.status(201).json({
+        data: {
+          ...newMessage.toObject(), // Convert to plain object
+          image: imageURL,  // Include the image URL in the response
+        },
+      });
+    } catch (error) {
+      console.log("Error in sendMessage: ", error.message);
+      res.status(500).json({ error: "Internal server error" });
     }
-}
+  };  
