@@ -49,10 +49,16 @@ const Sidebar = () => {
           >
             <div className="relative mx-auto lg:mx-0">
               <img
-                src={`user.profilePic || /avatar.png`}
+                src={user.profilePic || "/avatar.png"}
                 alt={user.name}
                 className="size-12 object-cover rounded-full"
               />
+              {onlineUsers.includes(user._id) && (
+                <span
+                  className="absolute bottom-0 right-0 size-3 bg-green-500 
+                  rounded-full ring-2 ring-zinc-900"
+                />
+              )}
             </div>
           </button>
         ))}
